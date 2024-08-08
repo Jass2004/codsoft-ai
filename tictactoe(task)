@@ -1,0 +1,95 @@
+def main():
+    introduction = intro()
+    board = create_grid()
+    printPretty(board)
+    symbol_1, symbol_2 = sym()
+    isFull(board, symbol_1, symbol_2)
+
+def intro():
+    print("Hello! Welcome to The Tic Tac Toe game!")
+    print("\nRules: Player 1 and player 2, represented by X and O, take turns "
+          "marking the spaces in a 3x3 grid. The player who succeeds in placing "
+          "three of their marks in a horizontal, vertical, or diagonal row wins.")
+    print("\n")
+    input("Press Enter to continue.")
+    print("\n")
+
+def create_grid():
+    print("Here is the playboard: ")
+    board = [[" " for _ in range(3)] for _ in range(3)]
+    return board
+
+def sym():
+    symbol_1 = input("Player 1, do you want to be X or O? ").upper()
+    if symbol_1 == "X":
+        symbol_2 = "O"
+        print("Player 2, you are O. ")
+    else:
+        symbol_2 = "X"
+        print("Player 2, you are X. ")
+    input("Press Enter to continue.")
+    print("\n")
+    return (symbol_1, symbol_2)
+
+def startGaming(board, symbol_1, symbol_2, count):
+    player = symbol_1 if count % 2 == 0 else symbol_2
+    print(f"Player {player}, it is your turn.")
+    
+    while True:
+        try:
+            row = int(input("Pick a row (0, 1, 2): "))
+            column = int(input("Pick a column (0, 1, 2): "))
+            if board[row][column] == " ":
+                board[row][column] = player
+                break
+            else:
+                print("The square you picked is already filled. Pick another one.")
+        except (IndexError, ValueError):
+            print("Out of board or invalid input. Pick another one.")
+    
+    return board
+
+def isFull(board, symbol_1, symbol_2):
+    count = 0
+    winner = None
+    while count < 9 and winner is None:
+        board = startGaming(board, symbol_1, symbol_2, count)
+        printPretty(board)
+        
+        winner = isWinner(board, symbol_1, symbol_2)
+        count += 1
+        
+    if winner is None:
+        print("The board is full. Game over.")
+        print("There is a tie.")
+    else:
+        print(f"Game over. {winner} wins!")
+
+def printPretty(board):
+    print("---+---+---")
+    for row in board:
+        print(" | ".join(row))
+        print("---+---+---")
+
+def isWinner(board, symbol_1, symbol_2):
+    # Check rows
+    for row in board:
+        if row[0] == row[1] == row[2] and row[0] in [symbol_1, symbol_2]:
+            return f"Player {row[0]}"
+
+    # Check columns
+    for col in range(3):
+        if board[0][col] == board[1][col] == board[2][col] and board[0][col] in [symbol_1, symbol_2]:
+            return f"Player {board[0][col]}"
+
+    # Check diagonals
+    if board[0][0] == board[1][1] == board[2][2] and board[0][0] in [symbol_1, symbol_2]:
+        return f"Player {board[0][0]}"
+    if board[0][2] == board[1][1] == board[2][0] and board[0][2] in [symbol_1, symbol_2]:
+        return f"Player {board[0][2]}"
+
+    return None
+
+if __name__ == "__main__":
+    main()
+
