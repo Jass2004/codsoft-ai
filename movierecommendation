@@ -1,0 +1,35 @@
+import pandas as pd
+import numpy as np
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import linear_kernel
+
+df_movies = pd.read_csv("Downloads/tmdb_5000_movies.csv")
+df_credits = pd.read_csv("Downloads/tmdb_5000_credits.csv")
+
+df_movies.head()
+
+df_credits.head()
+
+df_movies['overview']
+
+tfidf = TfidfVectorizer(stop_words="english")
+df_movies['overview'] = df_movies['overview'].fillna('')
+tfidf_matrix = tfidf.fit_transform(df_movies['overview'])
+
+cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
+
+indices = pd.Series(df_movies.index, index=df_movies['original_title']).drop_duplicates()
+indices
+
+indices['John Carter']
+
+def get_recommendations(title, cosine_sim = cosine_sim):
+    idx = indices[title]
+    sim_scores = enumerate(cosine_sim[idx])
+    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+    sim_scores = sim_scores[1:11]
+
+    sim_index = [i[0] for i in sim_scores]
+    print(df_movies['original_title'].iloc[sim_index])
+
+get_recommendations('John Carter')
